@@ -1,5 +1,5 @@
 {
-  "name": "file-uploder-sdk",
+  "name": "file-uploader-sdk",
   "version": "0.0.1",
   "description": "A file uploader sdk based on jQuery-File-Upload. It supports resize and crop functionalities on images.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/JacopoDaeli/file-uploder-sdk.git"
+    "url": "git+https://github.com/JacopoDaeli/file-uploader-sdk.git"
   },
   "keywords": [
     "file",
@@ -19,7 +19,7 @@
   "author": "Jacopo Daeli <jacopo.daeli@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/JacopoDaeli/file-uploder-sdk/issues"
+    "url": "https://github.com/JacopoDaeli/file-uploader-sdk/issues"
   },
-  "homepage": "https://github.com/JacopoDaeli/file-uploder-sdk#readme"
+  "homepage": "https://github.com/JacopoDaeli/file-uploader-sdk#readme"
 }
