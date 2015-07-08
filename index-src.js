@@ -21,7 +21,7 @@ class Cropper {
     });
   }
   getData() {
-    return this._cropper('getData');
+    return this._cropper.cropper('getData');
   }
   hide() {
     $(`.${this.cropperID}`).hide();
@@ -64,11 +64,10 @@ export class FileUploader {
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      this.uploadedImagesMetadata.push(this.cropperInstances[`${this.currentIndex}`].getData);
+      this.uploadedImagesMetadata.push(this.cropperInstances[`${this.currentIndex}`].getData());
       if (!this.cropperInstances[`${this.currentIndex+1}`]) {
         // TODO: Send the data
         console.log(this.uploadedImagesMetadata);
-
         // location.reload();
       } else {
         this.cropperInstances[`${this.currentIndex}`].hide();
