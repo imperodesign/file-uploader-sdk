@@ -38,7 +38,7 @@ var Cropper = (function () {
   }, {
     key: 'getData',
     value: function getData() {
-      return this._cropper('getData');
+      return this._cropper.cropper('getData');
     }
   }, {
     key: 'hide',
@@ -162,11 +162,10 @@ var FileUploader = (function () {
 
       // init next btn
       $('#nextBtn').on('click', function (e) {
-        _this.uploadedImagesMetadata.push(_this.cropperInstances['' + _this.currentIndex].getData);
+        _this.uploadedImagesMetadata.push(_this.cropperInstances['' + _this.currentIndex].getData());
         if (!_this.cropperInstances['' + (_this.currentIndex + 1)]) {
           // TODO: Send the data
           console.log(_this.uploadedImagesMetadata);
-
           // location.reload();
         } else {
           _this.cropperInstances['' + _this.currentIndex].hide();
