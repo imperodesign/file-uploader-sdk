@@ -23,7 +23,7 @@ var Cropper = (function () {
     key: 'start',
     value: function start() {
       this._cropper = $('.' + this.cropperID + ' > img').cropper({
-        aspectRatio: aspectRatio,
+        aspectRatio: this.aspectRatio,
         autoCropArea: 0.75,
         strict: false,
         guides: true,
