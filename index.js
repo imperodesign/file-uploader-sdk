@@ -137,7 +137,7 @@ var FileUploader = (function () {
         _this.croppers.forEach(function (cropperRequest, j) {
           var cropperID = 'cropper--' + i + '--' + j;
           var imgID = 'img--' + cropperID;
-          var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
+          var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
           var div = undefined;
           if (i === 0 && j === 0) {
             div = '<div class=\'' + cropperID + '\'>' + img + '</div>';
@@ -146,7 +146,7 @@ var FileUploader = (function () {
           }
           $(fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {
-            _this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
+            _this.cropperInstances[i] = new Cropper(cropperID, cropperRequest);
           });
         });
       });
@@ -157,7 +157,6 @@ var FileUploader = (function () {
         _this.cropperInstances[_this.currentIndex].hide();
 
         if (!_this.cropperInstances[_this.currentIndex + 1]) {
-          alert('done');
           return console.log(_this.uploadedImagesMetadata);
           // return location.reload();
         }

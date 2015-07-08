@@ -38,7 +38,7 @@ export class FileUploader {
       this.croppers.forEach((cropperRequest, j) => {
         const cropperID = `cropper--${i}--${j}`;
         const imgID = `img--${cropperID}`;
-        const img = `<img id="${imgID}" src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
+        const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
         let div;
         if(i === 0 && j === 0) {
           div = `<div class='${cropperID}'>${img}</div>`;
@@ -47,8 +47,8 @@ export class FileUploader {
         }
         $(fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
-          this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
-        })
+          this.cropperInstances[i] = new Cropper(cropperID, cropperRequest);
+        });
       });
 
     });
@@ -59,7 +59,6 @@ export class FileUploader {
       this.cropperInstances[this.currentIndex].hide();
 
       if(!this.cropperInstances[this.currentIndex+1]) {
-        alert('done')
         return console.log(this.uploadedImagesMetadata);
         // return location.reload();
       }
