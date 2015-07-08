@@ -51,7 +51,7 @@ var FileUploader = (function () {
     this.fileUploaderContainer = fileUploaderContainer;
     this.maxFileSize = opts.maxFileSize || -1;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
-    this.croppers = ops.croppers || undefined;
+    this.croppers = opts.croppers || undefined;
 
     this.uploadedFiles = [];
 
@@ -68,7 +68,7 @@ var FileUploader = (function () {
 
     $(fileUploaderContainer).append(html);
 
-    this._uploader = $('#').fileupload({
+    this._uploader = $('#fileupload').fileupload({
       url: '/api/files',
       dataType: 'json',
       beforeSend: function beforeSend(xhr) {
@@ -76,25 +76,24 @@ var FileUploader = (function () {
       },
       success: function success(data) {
         // location.href = '/admin/files';
-        this.uploadedFiles = this.uploadedFiles.concat(data);
+        self.uploadedFiles = self.uploadedFiles.concat(data);
       },
       progressall: function progressall(e, data) {
         var progress = parseInt(data.loaded / data.total * 100, 10);
         $('#progress .progress-bar').css('width', progress + '%');
       },
       stop: function stop(e) {
-        var _this = this;
 
-        if (!this.croppers) return location.reload();
+        if (!self.croppers) return location.reload();
 
         // Filter images only
-        this.uploadedFiles.forEach(function (uploadedFile, index) {
+        self.uploadedFiles.forEach(function (uploadedFile, index) {
           if (['image/jpeg', 'image/jpg', 'image/gif', 'image/png'].indexOf(uploadedFile.mimetype) > -1) {
-            _this.uploadedImages.push(uploadedFile);
+            self.uploadedImages.push(uploadedFile);
           }
         });
 
-        if (this.uploadedImages.length === 0) return location.reload();
+        if (self.uploadedImages.length === 0) return location.reload();
 
         // Destroy the uploader
         $('#fileupload').fileupload('destroy');
@@ -109,34 +108,34 @@ var FileUploader = (function () {
   _createClass(FileUploader, [{
     key: '_showCroppers',
     value: function _showCroppers() {
-      var _this2 = this;
+      var _this = this;
 
       this.uploadedImages.forEach(function (uploadedFile, i) {
 
-        _this2.croppers.forEach(function (cropperRequest, j) {
+        _this.croppers.forEach(function (cropperRequest, j) {
           var img = undefined;
-          var imgID = 'cropper--' + _this2.i + '--' + _this2.j;
+          var imgID = 'cropper--' + _this.i + '--' + _this.j;
           if (i === 0 && j === 0) {
-            img = '<img id=\'cropper--' + imgID + '\' src="' + _this2.uploadedImages[_this2.currentIndex].url + '" style="width: 100%" />';
+            img = '<img id=\'cropper--' + imgID + '\' src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
           } else {
-            img = '<img id=\'cropper--' + imgID + '\' src="' + _this2.uploadedImages[_this2.currentIndex].url + '" style="width: 100%; display: none" />';
+            img = '<img id=\'cropper--' + imgID + '\' src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%; display: none" />';
           }
           $(fileUploaderContainer).append(img);
-          _this2.cropperInstances.push(new Cropper('#' + imgID, cropperRequest));
+          _this.cropperInstances.push(new Cropper('#' + imgID, cropperRequest));
         });
       });
 
       // init next btn
       $('#nextBtn').on('click', function (e) {
-        if (_this2.cropperInstances.length === _this2.currentIndex) {
+        if (_this.cropperInstances.length === _this.currentIndex) {
           alert('done');
-          return console.log(_this2.uploadedImagesMetadata);
+          return console.log(_this.uploadedImagesMetadata);
           // return location.reload();
         }
 
-        _this2.uploadedImagesMetadata.push(_this2.cropperInstances[_this2.currentIndex].getData);
+        _this.uploadedImagesMetadata.push(_this.cropperInstances[_this.currentIndex].getData);
 
-        _this2.currentIndex++;
+        _this.currentIndex++;
       });
     }
   }]);

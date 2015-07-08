@@ -66,7 +66,7 @@ export class FileUploader {
     this.fileUploaderContainer = fileUploaderContainer;
     this.maxFileSize = opts.maxFileSize || -1;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
-    this.croppers = ops.croppers || undefined;
+    this.croppers = opts.croppers || undefined;
 
     this.uploadedFiles = [];
 
@@ -92,7 +92,7 @@ export class FileUploader {
 
     $(fileUploaderContainer).append(html);
 
-    this._uploader = $('#').fileupload({
+    this._uploader = $('#fileupload').fileupload({
       url: `/api/files`,
       dataType: 'json',
       beforeSend(xhr){
@@ -100,7 +100,7 @@ export class FileUploader {
       },
       success(data) {
         // location.href = '/admin/files';
-        this.uploadedFiles = this.uploadedFiles.concat(data);
+        self.uploadedFiles = self.uploadedFiles.concat(data);
       },
       progressall(e, data) {
         const progress = parseInt(data.loaded / data.total * 100, 10);
@@ -108,16 +108,16 @@ export class FileUploader {
       },
       stop(e) {
 
-        if(!this.croppers) return location.reload();
+        if(!self.croppers) return location.reload();
 
         // Filter images only
-        this.uploadedFiles.forEach((uploadedFile, index) => {
+        self.uploadedFiles.forEach((uploadedFile, index) => {
           if(['image/jpeg', 'image/jpg', 'image/gif', 'image/png'].indexOf(uploadedFile.mimetype) > -1) {
-            this.uploadedImages.push(uploadedFile);
+            self.uploadedImages.push(uploadedFile);
           }
         });
 
-        if(this.uploadedImages.length === 0) return location.reload();
+        if(self.uploadedImages.length === 0) return location.reload();
 
         // Destroy the uploader
         $('#fileupload').fileupload('destroy');

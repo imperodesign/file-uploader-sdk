@@ -23,6 +23,9 @@ $ npm install --save file-uploader-sdk
 ```
 
 ## Usage
+The HTML you need to include in your code is `<div id="fileUploaderContainer" class="..."></div>` and `<button id="nextBtn" ... />`.
+The `nextBtn` is only if you want upload images and cropper them. You can be inspired by the following snippet:
+
 ```html
 <div id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel" class="modal fade in" aria-hidden="false" style="display: block;">
   <div class="modal-dialog">
