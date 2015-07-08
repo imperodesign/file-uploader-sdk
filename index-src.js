@@ -4,14 +4,15 @@ class Cropper {
 
     this._cropper = $(`.${cropperID} > img`).cropper({
       aspectRatio: aspectRatio,
-      autoCropArea: 0.65,
+      autoCropArea: 0.75,
       strict: false,
       guides: true,
       highlight: false,
       dragCrop: false,
       cropBoxMovable: true,
       cropBoxResizable: true,
-      zoomable: false
+      zoomable: false,
+      movable: false
     });
   }
   destroy() {
@@ -103,8 +104,8 @@ export class FileUploader {
     </div>
     <div id="files" class="files"></div>`;
 
-    const closeBtn = `<button class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
-    const nextBtn = `<button class="btn btn-success hidden" type="button"> Save & Next </button>`;
+    const closeBtn = `<button id="btnClose" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
+    const nextBtn = `<button id="btnNext" class="btn btn-success hidden" type="button"> Save & Next </button>`;
 
     // Append elements to DOM
     $(fileUploaderContainer).append(html);
