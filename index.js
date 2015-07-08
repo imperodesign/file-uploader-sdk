@@ -16,14 +16,15 @@ var Cropper = (function () {
 
     this._cropper = $('.' + cropperID + ' > img').cropper({
       aspectRatio: aspectRatio,
-      autoCropArea: 0.65,
+      autoCropArea: 0.75,
       strict: false,
       guides: true,
       highlight: false,
       dragCrop: false,
       cropBoxMovable: true,
       cropBoxResizable: true,
-      zoomable: false
+      zoomable: false,
+      movable: false
     });
   }
 
@@ -79,8 +80,8 @@ var FileUploader = (function () {
 
     var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
 
-    var closeBtn = '<button class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
-    var nextBtn = '<button class="btn btn-success hidden" type="button"> Save & Next </button>';
+    var closeBtn = '<button id="btnClose" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
+    var nextBtn = '<button id="btnNext" class="btn btn-success hidden" type="button"> Save & Next </button>';
 
     // Append elements to DOM
     $(fileUploaderContainer).append(html);
@@ -117,7 +118,8 @@ var FileUploader = (function () {
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
 
-        $;
+        $('#nextBtn').removeClass('hidden');
+        $('#closeBtn').addClass('hidden');
 
         // Show croppers
         self._showCroppers();
