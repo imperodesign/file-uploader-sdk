@@ -39,12 +39,12 @@ var Cropper = (function () {
   }, {
     key: 'hide',
     value: function hide() {
-      $('.' + cropperID).hide();
+      $('.' + this.cropperID).hide();
     }
   }, {
     key: 'show',
     value: function show() {
-      $('.' + cropperID).show();
+      $('.' + this.cropperID).show();
     }
   }]);
 
