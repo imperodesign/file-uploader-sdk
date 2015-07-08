@@ -24,28 +24,27 @@ $ npm install --save file-uploader-sdk
 
 ## Usage
 ```html
-<div class="modal fade">
+<div id="uploadFilesModal" tabindex="-1" role="dialog" aria-labelledby="uploadFilesModalLabel" class="modal fade in" aria-hidden="false" style="display: block;">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title">Modal title</h4>
-      </div>
-      <div class="modal-body">
-        <p>One fine body&hellip;</p>
+        <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
+        <h4 class="modal-title">Upload Files</h4></div>
+      <div id="fileUploaderContainer" class="modal-body">
+        <!-- UPLOADER -->
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
+        <button id="closeBtn" type="button" data-dismiss="modal" class="btn btn-default">Close</button>
+        <button id="nextBtn" type="button" data-dismiss="modal" class="btn btn-default">Next</button>
       </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+    </div>
+  </div>
+</div>
 ```
 
 ```js
 const FileUploader = require('file-uploader-sdk').FileUploader;
-const FileUploaderInstance = new FileUploader({
+const FileUploaderInstance = new FileUploader('#fileUploaderContainer', {
   maxFileSize: 999000,
   acceptFileTypes: /(\.|\/)(gif|jpe?g|png)$/i, // default: no restriction
   croppers: [16/9, 4/3, 1/1]

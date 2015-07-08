@@ -1,0 +1,151 @@
+'use strict';
+
+Object.defineProperty(exports, '__esModule', {
+  value: true
+});
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ('value' in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
+
+var Cropper = (function () {
+  function Cropper(domElement, aspectRatio) {
+    _classCallCheck(this, Cropper);
+
+    this._cropper = $(domElement).cropper({
+      aspectRatio: aspectRatio,
+      autoCropArea: 0.65,
+      strict: false,
+      guides: false,
+      highlight: false,
+      dragCrop: false,
+      cropBoxMovable: true,
+      cropBoxResizable: true
+    });
+  }
+
+  _createClass(Cropper, [{
+    key: 'destroy',
+    value: function destroy() {}
+  }, {
+    key: 'getData',
+    value: function getData() {
+      return this._cropper.cropper('getData');
+    }
+  }]);
+
+  return Cropper;
+})();
+
+var FileUploader = (function () {
+  function FileUploader(fileUploaderContainer, opts) {
+    _classCallCheck(this, FileUploader);
+
+    opts = opts || {};
+    if (!fileUploaderContainer) throw new Error('fileUploaderContainer is mandatory.');
+
+    // Ref
+    var self = this;
+
+    // Options
+    this.fileUploaderContainer = fileUploaderContainer;
+    this.maxFileSize = opts.maxFileSize || -1;
+    this.acceptFileTypes = opts.acceptFileTypes || undefined;
+    this.croppers = ops.croppers || undefined;
+
+    this.uploadedFiles = [];
+
+    // Cropper stuff
+    this.currentIndex = 0;
+    this.uploadedImages = [];
+    this.uploadedImagesMetadata = [];
+    this.cropperInstances = [];
+
+    // TODO: Check file mimetypes
+    // TODO: Check filesize (should be done backend maybe)
+
+    var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
+
+    $(fileUploaderContainer).append(html);
+
+    this._uploader = $('#').fileupload({
+      url: '/api/files',
+      dataType: 'json',
+      beforeSend: function beforeSend(xhr) {
+        xhr.setRequestHeader('csrf-token', window.csrf);
+      },
+      success: function success(data) {
+        // location.href = '/admin/files';
+        this.uploadedFiles = this.uploadedFiles.concat(data);
+      },
+      progressall: function progressall(e, data) {
+        var progress = parseInt(data.loaded / data.total * 100, 10);
+        $('#progress .progress-bar').css('width', progress + '%');
+      },
+      stop: function stop(e) {
+        var _this = this;
+
+        if (!this.croppers) return location.reload();
+
+        // Filter images only
+        this.uploadedFiles.forEach(function (uploadedFile, index) {
+          if (['image/jpeg', 'image/jpg', 'image/gif', 'image/png'].indexOf(uploadedFile.mimetype) > -1) {
+            _this.uploadedImages.push(uploadedFile);
+          }
+        });
+
+        if (this.uploadedImages.length === 0) return location.reload();
+
+        // Destroy the uploader
+        $('#fileupload').fileupload('destroy');
+        $(fileUploaderContainer).empty();
+
+        // Show croppers
+        self._showCroppers();
+      }
+    }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
+  }
+
+  _createClass(FileUploader, [{
+    key: '_showCroppers',
+    value: function _showCroppers() {
+      var _this2 = this;
+
+      this.uploadedImages.forEach(function (uploadedFile, i) {
+
+        _this2.croppers.forEach(function (cropperRequest, j) {
+          var img = undefined;
+          var imgID = 'cropper--' + _this2.i + '--' + _this2.j;
+          if (i === 0 && j === 0) {
+            img = '<img id=\'cropper--' + imgID + '\' src="' + _this2.uploadedImages[_this2.currentIndex].url + '" style="width: 100%" />';
+          } else {
+            img = '<img id=\'cropper--' + imgID + '\' src="' + _this2.uploadedImages[_this2.currentIndex].url + '" style="width: 100%; display: none" />';
+          }
+          $(fileUploaderContainer).append(img);
+          _this2.cropperInstances.push(new Cropper('#' + imgID, cropperRequest));
+        });
+      });
+
+      // init next btn
+      $('#nextBtn').on('click', function (e) {
+        if (_this2.cropperInstances.length === _this2.currentIndex) {
+          alert('done');
+          return console.log(_this2.uploadedImagesMetadata);
+          // return location.reload();
+        }
+
+        _this2.uploadedImagesMetadata.push(_this2.cropperInstances[_this2.currentIndex].getData);
+
+        _this2.currentIndex++;
+      });
+    }
+  }]);
+
+  return FileUploader;
+})();
+
+exports.FileUploader = FileUploader;
+
+// this._cropper.destroy();
+
+//# sourceMappingURL=index.js.map
