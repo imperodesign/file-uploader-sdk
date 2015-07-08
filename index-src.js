@@ -22,10 +22,10 @@ class Cropper {
     return this._cropper.cropper('getData');
   }
   hide() {
-    $(`.${cropperID}`).hide();
+    $(`.${this.cropperID}`).hide();
   }
   show() {
-    $(`.${cropperID}`).show();
+    $(`.${this.cropperID}`).show();
   }
 }
 
