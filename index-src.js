@@ -64,7 +64,7 @@ export class FileUploader {
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      this.uploadedImagesMetadata.push(this.cropperInstances[`${this.currentIndex}`].getData());
+      this.uploadedImagesMetadata[`${this.currentIndex}`] = this.cropperInstances[`${this.currentIndex}`].getData();
       if (!this.cropperInstances[`${this.currentIndex+1}`]) {
         // TODO: Send the data
         console.log(this.uploadedImagesMetadata);
