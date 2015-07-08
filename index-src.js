@@ -1,14 +1,17 @@
 class Cropper {
   constructor(cropperID, aspectRatio) {
+    this.cropperID = cropperID;
+
     this._cropper = $(`.${cropperID} > img`).cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.65,
       strict: false,
-      guides: false,
+      guides: true,
       highlight: false,
       dragCrop: false,
       cropBoxMovable: true,
-      cropBoxResizable: true
+      cropBoxResizable: true,
+      zoomable: false
     });
   }
   destroy() {
@@ -16,6 +19,12 @@ class Cropper {
   }
   getData() {
     return this._cropper.cropper('getData');
+  }
+  hide() {
+    $(`.${cropperID}`).hide();
+  }
+  show() {
+    $(`.${cropperID}`).show();
   }
 }
 
@@ -26,8 +35,9 @@ export class FileUploader {
     this.uploadedImages.forEach((uploadedFile, i) => {
 
       this.croppers.forEach((cropperRequest, j) => {
-        const img = `<img src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
         const cropperID = `cropper--${i}--${j}`;
+        const imgID = `img--${cropperID}`;
+        const img = `<img id="${imgID}" src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
         let div;
         if(i === 0 && j === 0) {
           div = `<div class='cropper--${cropperID}'>${img}</div>`;
@@ -35,29 +45,29 @@ export class FileUploader {
           div = `<div class='cropper--${cropperID}' style="display: none">${img}</div>`;
         }
         $(fileUploaderContainer).append(div);
-        setTimeout(() => {
+        $(`#${imgID}`).load(() => {
           this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
-        }, 400);
+        })
       });
 
     });
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      if(this.cropperInstances.length === this.currentIndex) {
+      this.uploadedImagesMetadata.push(this.cropperInstances[this.currentIndex].getData);
+      this.cropperInstances[this.currentIndex].hide();
+
+      if(!this.cropperInstances[this.currentIndex+1]) {
         alert('done')
         return console.log(this.uploadedImagesMetadata);
         // return location.reload();
       }
 
-      this.uploadedImagesMetadata.push(this.cropperInstances[this.currentIndex].getData);
-
       this.currentIndex++;
-
     });
   }
 
-  constructor(fileUploaderContainer, opts) {
+  constructor(fileUploaderContainer, fileUploaderMediaController, opts) {
 
     opts = opts || {};
     if(!fileUploaderContainer) throw new Error('fileUploaderContainer is mandatory.');
@@ -91,9 +101,14 @@ export class FileUploader {
     <div id="progress" class="progress">
       <div class="progress-bar progress-bar-success"></div>
     </div>
-    <div id="files" class="files"></div>`
+    <div id="files" class="files"></div>`;
 
+    const closeBtn = `<button class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
+    const nextBtn = `<button class="btn btn-success hidden" type="button"> Save & Next </button>`;
+
+    // Append elements to DOM
     $(fileUploaderContainer).append(html);
+    $(fileUploaderMediaController).append(`${closeBtn}${nextBtn}`);
 
     this._uploader = $('#fileupload').fileupload({
       url: `/api/files`,
@@ -125,6 +140,8 @@ export class FileUploader {
         // Destroy the uploader
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
+
+        $
 
         // Show croppers
         self._showCroppers();

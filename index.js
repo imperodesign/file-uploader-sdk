@@ -12,15 +12,18 @@ var Cropper = (function () {
   function Cropper(cropperID, aspectRatio) {
     _classCallCheck(this, Cropper);
 
+    this.cropperID = cropperID;
+
     this._cropper = $('.' + cropperID + ' > img').cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.65,
       strict: false,
-      guides: false,
+      guides: true,
       highlight: false,
       dragCrop: false,
       cropBoxMovable: true,
-      cropBoxResizable: true
+      cropBoxResizable: true,
+      zoomable: false
     });
   }
 
@@ -32,13 +35,23 @@ var Cropper = (function () {
     value: function getData() {
       return this._cropper.cropper('getData');
     }
+  }, {
+    key: 'hide',
+    value: function hide() {
+      $('.' + cropperID).hide();
+    }
+  }, {
+    key: 'show',
+    value: function show() {
+      $('.' + cropperID).show();
+    }
   }]);
 
   return Cropper;
 })();
 
 var FileUploader = (function () {
-  function FileUploader(fileUploaderContainer, opts) {
+  function FileUploader(fileUploaderContainer, fileUploaderMediaController, opts) {
     _classCallCheck(this, FileUploader);
 
     opts = opts || {};
@@ -66,7 +79,12 @@ var FileUploader = (function () {
 
     var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
 
+    var closeBtn = '<button class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
+    var nextBtn = '<button class="btn btn-success hidden" type="button"> Save & Next </button>';
+
+    // Append elements to DOM
     $(fileUploaderContainer).append(html);
+    $(fileUploaderMediaController).append('' + closeBtn + nextBtn);
 
     this._uploader = $('#fileupload').fileupload({
       url: '/api/files',
@@ -99,6 +117,8 @@ var FileUploader = (function () {
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
 
+        $;
+
         // Show croppers
         self._showCroppers();
       }
@@ -113,8 +133,9 @@ var FileUploader = (function () {
       this.uploadedImages.forEach(function (uploadedFile, i) {
 
         _this.croppers.forEach(function (cropperRequest, j) {
-          var img = '<img src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
           var cropperID = 'cropper--' + i + '--' + j;
+          var imgID = 'img--' + cropperID;
+          var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
           var div = undefined;
           if (i === 0 && j === 0) {
             div = '<div class=\'cropper--' + cropperID + '\'>' + img + '</div>';
@@ -122,21 +143,22 @@ var FileUploader = (function () {
             div = '<div class=\'cropper--' + cropperID + '\' style="display: none">' + img + '</div>';
           }
           $(fileUploaderContainer).append(div);
-          setTimeout(function () {
+          $('#' + imgID).load(function () {
             _this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
-          }, 400);
+          });
         });
       });
 
       // init next btn
       $('#nextBtn').on('click', function (e) {
-        if (_this.cropperInstances.length === _this.currentIndex) {
+        _this.uploadedImagesMetadata.push(_this.cropperInstances[_this.currentIndex].getData);
+        _this.cropperInstances[_this.currentIndex].hide();
+
+        if (!_this.cropperInstances[_this.currentIndex + 1]) {
           alert('done');
           return console.log(_this.uploadedImagesMetadata);
           // return location.reload();
         }
-
-        _this.uploadedImagesMetadata.push(_this.cropperInstances[_this.currentIndex].getData);
 
         _this.currentIndex++;
       });
