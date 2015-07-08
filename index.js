@@ -80,8 +80,8 @@ var FileUploader = (function () {
 
     var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
 
-    var closeBtn = '<button id="btnClose" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
-    var nextBtn = '<button id="btnNext" class="btn btn-success hidden" type="button"> Save & Next </button>';
+    var closeBtn = '<button id="closeBtn" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
+    var nextBtn = '<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>';
 
     // Append elements to DOM
     $(fileUploaderContainer).append(html);
