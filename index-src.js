@@ -104,8 +104,8 @@ export class FileUploader {
     </div>
     <div id="files" class="files"></div>`;
 
-    const closeBtn = `<button id="btnClose" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
-    const nextBtn = `<button id="btnNext" class="btn btn-success hidden" type="button"> Save & Next </button>`;
+    const closeBtn = `<button id="closeBtn" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
+    const nextBtn = `<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>`;
 
     // Append elements to DOM
     $(fileUploaderContainer).append(html);
