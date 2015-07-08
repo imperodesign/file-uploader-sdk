@@ -13,28 +13,32 @@ var Cropper = (function () {
     _classCallCheck(this, Cropper);
 
     this.cropperID = cropperID;
-
-    this._cropper = $('.' + cropperID + ' > img').cropper({
-      aspectRatio: aspectRatio,
-      autoCropArea: 0.75,
-      strict: false,
-      guides: true,
-      highlight: false,
-      dragCrop: false,
-      cropBoxMovable: true,
-      cropBoxResizable: true,
-      zoomable: false,
-      movable: false
-    });
+    this.aspectRatio = aspectRatio;
   }
 
   _createClass(Cropper, [{
     key: 'destroy',
     value: function destroy() {}
   }, {
+    key: 'start',
+    value: function start() {
+      this._cropper = $('.' + this.cropperID + ' > img').cropper({
+        aspectRatio: aspectRatio,
+        autoCropArea: 0.75,
+        strict: false,
+        guides: true,
+        highlight: false,
+        dragCrop: false,
+        cropBoxMovable: true,
+        cropBoxResizable: true,
+        zoomable: false,
+        movable: false
+      });
+    }
+  }, {
     key: 'getData',
     value: function getData() {
-      return this._cropper.cropper('getData');
+      return this._cropper('getData');
     }
   }, {
     key: 'hide',
@@ -118,7 +122,6 @@ var FileUploader = (function () {
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
 
-        $('#nextBtn').removeClass('hidden');
         $('#closeBtn').addClass('hidden');
 
         // Show croppers
@@ -132,36 +135,45 @@ var FileUploader = (function () {
     value: function _showCroppers() {
       var _this = this;
 
+      var globalCounter = 0;
+
       this.uploadedImages.forEach(function (uploadedFile, i) {
 
         _this.croppers.forEach(function (cropperRequest, j) {
+          var counter = globalCounter;
           var cropperID = 'cropper--' + i + '--' + j;
           var imgID = 'img--' + cropperID;
           var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
-          var div = undefined;
-          if (i === 0 && j === 0) {
-            div = '<div class=\'' + cropperID + '\'>' + img + '</div>';
-          } else {
-            div = '<div class=\'' + cropperID + '\' style="display: none">' + img + '</div>';
-          }
+          var div = '<div class=\'' + cropperID + '\' style="display: none">' + img + '</div>';
+
           $(fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {
-            _this.cropperInstances[i] = new Cropper(cropperID, cropperRequest);
+            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest);
+            if (counter === 0) {
+              _this.cropperInstances[counter].show();
+              _this.cropperInstances[counter].start();
+              $('#nextBtn').removeClass('hidden');
+            }
           });
+
+          globalCounter++;
         });
       });
 
       // init next btn
       $('#nextBtn').on('click', function (e) {
-        _this.uploadedImagesMetadata.push(_this.cropperInstances[_this.currentIndex].getData);
-        _this.cropperInstances[_this.currentIndex].hide();
+        _this.uploadedImagesMetadata.push(_this.cropperInstances['' + _this.currentIndex].getData);
+        if (!_this.cropperInstances['' + (_this.currentIndex + 1)]) {
+          // TODO: Send the data
+          console.log(_this.uploadedImagesMetadata);
 
-        if (!_this.cropperInstances[_this.currentIndex + 1]) {
-          return console.log(_this.uploadedImagesMetadata);
-          // return location.reload();
+          // location.reload();
+        } else {
+          _this.cropperInstances['' + _this.currentIndex].hide();
+          _this.cropperInstances['' + (_this.currentIndex + 1)].show();
+          _this.cropperInstances['' + (_this.currentIndex + 1)].start();
+          _this.currentIndex++;
         }
-
-        _this.currentIndex++;
       });
     }
   }]);

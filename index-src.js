@@ -1,8 +1,13 @@
 class Cropper {
   constructor(cropperID, aspectRatio) {
     this.cropperID = cropperID;
-
-    this._cropper = $(`.${cropperID} > img`).cropper({
+    this.aspectRatio = aspectRatio;
+  }
+  destroy() {
+    // this._cropper.destroy();
+  }
+  start() {
+    this._cropper = $(`.${this.cropperID} > img`).cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.75,
       strict: false,
@@ -15,11 +20,8 @@ class Cropper {
       movable: false
     });
   }
-  destroy() {
-    // this._cropper.destroy();
-  }
   getData() {
-    return this._cropper.cropper('getData');
+    return this._cropper('getData');
   }
   hide() {
     $(`.${this.cropperID}`).hide();
@@ -33,37 +35,47 @@ export class FileUploader {
 
   _showCroppers() {
 
+    let globalCounter = 0;
+
     this.uploadedImages.forEach((uploadedFile, i) => {
 
       this.croppers.forEach((cropperRequest, j) => {
+        const counter = globalCounter;
         const cropperID = `cropper--${i}--${j}`;
         const imgID = `img--${cropperID}`;
         const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
-        let div;
-        if(i === 0 && j === 0) {
-          div = `<div class='${cropperID}'>${img}</div>`;
-        } else {
-          div = `<div class='${cropperID}' style="display: none">${img}</div>`;
-        }
+        const div = `<div class='${cropperID}' style="display: none">${img}</div>`;
+
         $(fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
-          this.cropperInstances[i] = new Cropper(cropperID, cropperRequest);
+          this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest);
+          if(counter === 0) {
+            this.cropperInstances[counter].show();
+            this.cropperInstances[counter].start();
+            $('#nextBtn').removeClass('hidden');
+          }
         });
+
+        globalCounter++;
+
       });
 
     });
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      this.uploadedImagesMetadata.push(this.cropperInstances[this.currentIndex].getData);
-      this.cropperInstances[this.currentIndex].hide();
+      this.uploadedImagesMetadata.push(this.cropperInstances[`${this.currentIndex}`].getData);
+      if (!this.cropperInstances[`${this.currentIndex+1}`]) {
+        // TODO: Send the data
+        console.log(this.uploadedImagesMetadata);
 
-      if(!this.cropperInstances[this.currentIndex+1]) {
-        return console.log(this.uploadedImagesMetadata);
-        // return location.reload();
+        // location.reload();
+      } else {
+        this.cropperInstances[`${this.currentIndex}`].hide();
+        this.cropperInstances[`${this.currentIndex + 1}`].show();
+        this.cropperInstances[`${this.currentIndex + 1}`].start();
+        this.currentIndex++;
       }
-
-      this.currentIndex++;
     });
   }
 
@@ -141,7 +153,6 @@ export class FileUploader {
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
 
-        $('#nextBtn').removeClass('hidden');
         $('#closeBtn').addClass('hidden');
 
         // Show croppers
