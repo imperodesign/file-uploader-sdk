@@ -9,10 +9,10 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Cropper = (function () {
-  function Cropper(domElement, aspectRatio) {
+  function Cropper(cropperID, aspectRatio) {
     _classCallCheck(this, Cropper);
 
-    this._cropper = $(domElement).cropper({
+    this._cropper = $('#' + cropperID + ' > img').cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.65,
       strict: false,
@@ -113,15 +113,16 @@ var FileUploader = (function () {
       this.uploadedImages.forEach(function (uploadedFile, i) {
 
         _this.croppers.forEach(function (cropperRequest, j) {
-          var img = undefined;
-          var imgID = 'cropper--' + _this.i + '--' + _this.j;
+          var img = '<img src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
+          var cropperID = 'cropper--' + i + '--' + j;
+          var div = undefined;
           if (i === 0 && j === 0) {
-            img = '<img id=\'cropper--' + imgID + '\' src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
+            div = '<div id=\'cropper--' + cropperID + '\'>' + img + '</div>';
           } else {
-            img = '<img id=\'cropper--' + imgID + '\' src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%; display: none" />';
+            div = '<div id=\'cropper--' + cropperID + '\' style="display: none">' + img + '</div>';
           }
-          $(fileUploaderContainer).append(img);
-          _this.cropperInstances.push(new Cropper('#' + imgID, cropperRequest));
+          $(fileUploaderContainer).append(div);
+          _this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
         });
       });
 

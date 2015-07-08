@@ -1,6 +1,6 @@
 class Cropper {
-  constructor(domElement, aspectRatio) {
-    this._cropper = $(domElement).cropper({
+  constructor(cropperID, aspectRatio) {
+    this._cropper = $(`#${cropperID} > img`).cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.65,
       strict: false,
@@ -26,15 +26,16 @@ export class FileUploader {
     this.uploadedImages.forEach((uploadedFile, i) => {
 
       this.croppers.forEach((cropperRequest, j) => {
-        let img;
-        const imgID = `cropper--${this.i}--${this.j}`;
+        const img = `<img src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
+        const cropperID = `cropper--${i}--${j}`;
+        let div;
         if(i === 0 && j === 0) {
-          img = `<img id='cropper--${imgID}' src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
+          div = `<div id='cropper--${cropperID}'>${img}</div>`;
         } else {
-          img = `<img id='cropper--${imgID}' src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%; display: none" />`;
+          div = `<div id='cropper--${cropperID}' style="display: none">${img}</div>`;
         }
-        $(fileUploaderContainer).append(img);
-        this.cropperInstances.push(new Cropper(`#${imgID}`, cropperRequest));
+        $(fileUploaderContainer).append(div);
+        this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
       });
 
     });
