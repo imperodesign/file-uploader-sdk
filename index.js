@@ -138,9 +138,9 @@ var FileUploader = (function () {
           var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[_this.currentIndex].url + '" style="width: 100%" />';
           var div = undefined;
           if (i === 0 && j === 0) {
-            div = '<div class=\'cropper--' + cropperID + '\'>' + img + '</div>';
+            div = '<div class=\'' + cropperID + '\'>' + img + '</div>';
           } else {
-            div = '<div class=\'cropper--' + cropperID + '\' style="display: none">' + img + '</div>';
+            div = '<div class=\'' + cropperID + '\' style="display: none">' + img + '</div>';
           }
           $(fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {

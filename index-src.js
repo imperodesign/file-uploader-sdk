@@ -40,9 +40,9 @@ export class FileUploader {
         const img = `<img id="${imgID}" src="${this.uploadedImages[this.currentIndex].url}" style="width: 100%" />`;
         let div;
         if(i === 0 && j === 0) {
-          div = `<div class='cropper--${cropperID}'>${img}</div>`;
+          div = `<div class='${cropperID}'>${img}</div>`;
         } else {
-          div = `<div class='cropper--${cropperID}' style="display: none">${img}</div>`;
+          div = `<div class='${cropperID}' style="display: none">${img}</div>`;
         }
         $(fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
@@ -141,7 +141,8 @@ export class FileUploader {
         $('#fileupload').fileupload('destroy');
         $(fileUploaderContainer).empty();
 
-        $
+        $('#nextBtn').removeClass('hidden');
+        $('#closeBtn').addClass('hidden');
 
         // Show croppers
         self._showCroppers();
