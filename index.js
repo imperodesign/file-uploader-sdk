@@ -12,7 +12,7 @@ var Cropper = (function () {
   function Cropper(cropperID, aspectRatio) {
     _classCallCheck(this, Cropper);
 
-    this._cropper = $('#' + cropperID + ' > img').cropper({
+    this._cropper = $('.' + cropperID + ' > img').cropper({
       aspectRatio: aspectRatio,
       autoCropArea: 0.65,
       strict: false,
@@ -117,12 +117,14 @@ var FileUploader = (function () {
           var cropperID = 'cropper--' + i + '--' + j;
           var div = undefined;
           if (i === 0 && j === 0) {
-            div = '<div id=\'cropper--' + cropperID + '\'>' + img + '</div>';
+            div = '<div class=\'cropper--' + cropperID + '\'>' + img + '</div>';
           } else {
-            div = '<div id=\'cropper--' + cropperID + '\' style="display: none">' + img + '</div>';
+            div = '<div class=\'cropper--' + cropperID + '\' style="display: none">' + img + '</div>';
           }
           $(fileUploaderContainer).append(div);
-          _this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
+          setTimeout(function () {
+            _this.cropperInstances.push(new Cropper(cropperID, cropperRequest));
+          }, 400);
         });
       });
 
