@@ -172,7 +172,7 @@ var FileUploader = (function () {
         if (!_this.cropperInstances[_this.currentIndex + 1]) {
           (function () {
 
-            var filesMetadata = [];
+            var filesMetadata = {};
 
             // Sending the data to the server
             _this.uploadedImagesMetadata.forEach(function (data, index) {
