@@ -80,12 +80,13 @@ export class FileUploader {
         $.ajax({
           url: `/api/files/metadata`,
           method: 'PUT',
+          contentType: 'application/json',
           dataType: 'json',
-          data: filesMetadata,
+          data: JSON.stringify({files: filesMetadata}),
           beforeSend(xhr){
             xhr.setRequestHeader('csrf-token', window.csrf);
           },
-          success:function(data, textStatus, jqXHR) {
+          success: function(data, textStatus, jqXHR) {
             location.reload();
           },
           error: function(jqXHR, textStatus, errorThrown) {

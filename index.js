@@ -180,8 +180,9 @@ var FileUploader = (function () {
           $.ajax({
             url: '/api/files/metadata',
             method: 'PUT',
+            contentType: 'application/json',
             dataType: 'json',
-            data: filesMetadata,
+            data: JSON.stringify(filesMetadata),
             beforeSend: function beforeSend(xhr) {
               xhr.setRequestHeader('csrf-token', window.csrf);
             },
