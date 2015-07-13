@@ -13,7 +13,7 @@ var Cropper = (function () {
     _classCallCheck(this, Cropper);
 
     this.cropperID = cropperID;
-    this.name = name;
+    this.name = cropperName;
     this.aspectRatio = aspectRatio;
   }
 
@@ -177,6 +177,7 @@ var FileUploader = (function () {
             // Sending the data to the server
             _this.uploadedImagesMetadata.forEach(function (data, index) {
               _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
+              console.log(_this.cropperInstances[index].name);
               filesMetadata[_this.cropperInstances[index].name] = _this.uploadedImagesMetadata[index];
             });
 
