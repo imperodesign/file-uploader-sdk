@@ -1,7 +1,7 @@
 class Cropper {
   constructor(cropperID, cropperName, aspectRatio) {
     this.cropperID = cropperID;
-    this.name = name;
+    this.name = cropperName;
     this.aspectRatio = aspectRatio;
   }
   destroy() {
@@ -76,6 +76,7 @@ export class FileUploader {
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
           this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
+          console.log(this.cropperInstances[index].name)
           filesMetadata[this.cropperInstances[index].name] = this.uploadedImagesMetadata[index];
         });
 
