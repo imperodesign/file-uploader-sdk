@@ -182,7 +182,7 @@ var FileUploader = (function () {
             method: 'PUT',
             contentType: 'application/json',
             dataType: 'json',
-            data: JSON.stringify({ files: filesMetadata }),
+            data: JSON.stringify({ files: filesMetadata, metadata_name: 'cropper' }),
             beforeSend: function beforeSend(xhr) {
               xhr.setRequestHeader('csrf-token', window.csrf);
             },
