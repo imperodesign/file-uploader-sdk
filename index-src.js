@@ -1,6 +1,7 @@
 class Cropper {
-  constructor(cropperID, aspectRatio) {
+  constructor(cropperID, cropperName, aspectRatio) {
     this.cropperID = cropperID;
+    this.name = name;
     this.aspectRatio = aspectRatio;
   }
   destroy() {
@@ -47,11 +48,11 @@ export class FileUploader {
         const cropperID = `cropper--${i}--${j}`;
         const imgID = `img--${cropperID}`;
         const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
-        const div = `<div class='${cropperID}' data-imgid="this.uploadedImages[i]._id" style="display: none">${img}</div>`;
+        const div = `<div class='${cropperID}' data-imgid="${this.uploadedImages[i]._id}" style="display: none">${img}</div>`;
 
         $(fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
-          this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest);
+          this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value);
           if(counter === 0) {
             this.cropperInstances[counter].show();
             this.cropperInstances[counter].start();
@@ -70,12 +71,13 @@ export class FileUploader {
       this.uploadedImagesMetadata[this.currentIndex] = this.cropperInstances[this.currentIndex].getData();
       if (!this.cropperInstances[this.currentIndex+1]) {
 
+        const filesMetadata = [];
+
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
           this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
+          filesMetadata[this.cropperInstances[index].name] = this.uploadedImagesMetadata[index];
         });
-
-        const filesMetadata = this.uploadedImagesMetadata;
 
         $.ajax({
           url: `/api/files/metadata`,

@@ -9,10 +9,11 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Cropper = (function () {
-  function Cropper(cropperID, aspectRatio) {
+  function Cropper(cropperID, cropperName, aspectRatio) {
     _classCallCheck(this, Cropper);
 
     this.cropperID = cropperID;
+    this.name = name;
     this.aspectRatio = aspectRatio;
   }
 
@@ -149,11 +150,11 @@ var FileUploader = (function () {
           var cropperID = 'cropper--' + i + '--' + j;
           var imgID = 'img--' + cropperID;
           var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
-          var div = '<div class=\'' + cropperID + '\' data-imgid="this.uploadedImages[i]._id" style="display: none">' + img + '</div>';
+          var div = '<div class=\'' + cropperID + '\' data-imgid="' + _this.uploadedImages[i]._id + '" style="display: none">' + img + '</div>';
 
           $(fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {
-            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest);
+            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value);
             if (counter === 0) {
               _this.cropperInstances[counter].show();
               _this.cropperInstances[counter].start();
@@ -169,33 +170,36 @@ var FileUploader = (function () {
       $('#nextBtn').on('click', function (e) {
         _this.uploadedImagesMetadata[_this.currentIndex] = _this.cropperInstances[_this.currentIndex].getData();
         if (!_this.cropperInstances[_this.currentIndex + 1]) {
+          (function () {
 
-          // Sending the data to the server
-          _this.uploadedImagesMetadata.forEach(function (data, index) {
-            _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
-          });
+            var filesMetadata = [];
 
-          var filesMetadata = _this.uploadedImagesMetadata;
+            // Sending the data to the server
+            _this.uploadedImagesMetadata.forEach(function (data, index) {
+              _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
+              filesMetadata[_this.cropperInstances[index].name] = _this.uploadedImagesMetadata[index];
+            });
 
-          $.ajax({
-            url: '/api/files/metadata',
-            method: 'PUT',
-            contentType: 'application/json',
-            dataType: 'json',
-            data: JSON.stringify({ files: filesMetadata, metadata_name: 'cropper' }),
-            beforeSend: function beforeSend(xhr) {
-              xhr.setRequestHeader('csrf-token', window.csrf);
-            },
-            success: function success(data, textStatus, jqXHR) {
-              location.reload();
-            },
-            error: function error(jqXHR, textStatus, errorThrown) {
-              // Print the errors to the console
-              console.error(jqXHR.responseJSON[0].msg + '.');
+            $.ajax({
+              url: '/api/files/metadata',
+              method: 'PUT',
+              contentType: 'application/json',
+              dataType: 'json',
+              data: JSON.stringify({ files: filesMetadata, metadata_name: 'cropper' }),
+              beforeSend: function beforeSend(xhr) {
+                xhr.setRequestHeader('csrf-token', window.csrf);
+              },
+              success: function success(data, textStatus, jqXHR) {
+                location.reload();
+              },
+              error: function error(jqXHR, textStatus, errorThrown) {
+                // Print the errors to the console
+                console.error(jqXHR.responseJSON[0].msg + '.');
 
-              // TODO: Show errors to the user
-            }
-          });
+                // TODO: Show errors to the user
+              }
+            });
+          })();
         } else {
           _this.cropperInstances[_this.currentIndex].hide();
           _this.cropperInstances[_this.currentIndex + 1].show();
