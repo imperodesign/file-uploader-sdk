@@ -79,6 +79,7 @@ export class FileUploader {
 
         $.ajax({
           url: `/api/files/metadata`,
+          method: 'PUT',
           dataType: 'json',
           data: filesMetadata,
           beforeSend(xhr){

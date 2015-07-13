@@ -179,6 +179,7 @@ var FileUploader = (function () {
 
           $.ajax({
             url: '/api/files/metadata',
+            method: 'PUT',
             dataType: 'json',
             data: filesMetadata,
             beforeSend: function beforeSend(xhr) {
