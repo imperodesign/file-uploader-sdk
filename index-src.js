@@ -82,7 +82,7 @@ export class FileUploader {
           method: 'PUT',
           contentType: 'application/json',
           dataType: 'json',
-          data: JSON.stringify({files: filesMetadata}),
+          data: JSON.stringify({files: filesMetadata, metadata_name: 'cropper'}),
           beforeSend(xhr){
             xhr.setRequestHeader('csrf-token', window.csrf);
           },
