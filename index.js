@@ -172,7 +172,7 @@ var FileUploader = (function () {
 
           // Sending the data to the server
           _this.uploadedImagesMetadata.forEach(function (data, index) {
-            _this.uploadedImagesMetadata._id = _this.cropperInstances[index].getImgId();
+            _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
           });
 
           var filesMetadata = _this.uploadedImagesMetadata;

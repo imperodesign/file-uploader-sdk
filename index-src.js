@@ -72,7 +72,7 @@ export class FileUploader {
 
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
-          this.uploadedImagesMetadata._id = this.cropperInstances[index].getImgId();
+          this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
         });
 
         const filesMetadata = this.uploadedImagesMetadata;
