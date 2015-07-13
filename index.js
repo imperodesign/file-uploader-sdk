@@ -50,6 +50,11 @@ var Cropper = (function () {
     value: function show() {
       $('.' + this.cropperID).show();
     }
+  }, {
+    key: 'getImgId',
+    value: function getImgId() {
+      return $('.' + this.cropperID).data('imgid');
+    }
   }]);
 
   return Cropper;
@@ -144,7 +149,7 @@ var FileUploader = (function () {
           var cropperID = 'cropper--' + i + '--' + j;
           var imgID = 'img--' + cropperID;
           var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
-          var div = '<div class=\'' + cropperID + '\' style="display: none">' + img + '</div>';
+          var div = '<div class=\'' + cropperID + '\' data-imgid="this.uploadedImages[i]._id" style="display: none">' + img + '</div>';
 
           $(fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {
@@ -162,15 +167,37 @@ var FileUploader = (function () {
 
       // init next btn
       $('#nextBtn').on('click', function (e) {
-        _this.uploadedImagesMetadata['' + _this.currentIndex] = _this.cropperInstances['' + _this.currentIndex].getData();
-        if (!_this.cropperInstances['' + (_this.currentIndex + 1)]) {
-          // TODO: Send the data
-          console.log(_this.uploadedImagesMetadata);
-          // location.reload();
+        _this.uploadedImagesMetadata[_this.currentIndex] = _this.cropperInstances[_this.currentIndex].getData();
+        if (!_this.cropperInstances[_this.currentIndex + 1]) {
+
+          // Sending the data to the server
+          _this.uploadedImagesMetadata.forEach(function (data, index) {
+            _this.uploadedImagesMetadata._id = _this.cropperInstances[index].getImgId();
+          });
+
+          var filesMetadata = _this.uploadedImagesMetadata;
+
+          $.ajax({
+            url: '/api/files/metadata',
+            dataType: 'json',
+            data: filesMetadata,
+            beforeSend: function beforeSend(xhr) {
+              xhr.setRequestHeader('csrf-token', window.csrf);
+            },
+            success: function success(data, textStatus, jqXHR) {
+              location.reload();
+            },
+            error: function error(jqXHR, textStatus, errorThrown) {
+              // Print the errors to the console
+              console.error(jqXHR.responseJSON[0].msg + '.');
+
+              // TODO: Show errors to the user
+            }
+          });
         } else {
-          _this.cropperInstances['' + _this.currentIndex].hide();
-          _this.cropperInstances['' + (_this.currentIndex + 1)].show();
-          _this.cropperInstances['' + (_this.currentIndex + 1)].start();
+          _this.cropperInstances[_this.currentIndex].hide();
+          _this.cropperInstances[_this.currentIndex + 1].show();
+          _this.cropperInstances[_this.currentIndex + 1].start();
           _this.currentIndex++;
         }
       });

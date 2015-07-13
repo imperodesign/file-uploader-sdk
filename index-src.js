@@ -29,6 +29,9 @@ class Cropper {
   show() {
     $(`.${this.cropperID}`).show();
   }
+  getImgId() {
+    return $(`.${this.cropperID}`).data('imgid');
+  }
 }
 
 export class FileUploader {
@@ -44,7 +47,7 @@ export class FileUploader {
         const cropperID = `cropper--${i}--${j}`;
         const imgID = `img--${cropperID}`;
         const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
-        const div = `<div class='${cropperID}' style="display: none">${img}</div>`;
+        const div = `<div class='${cropperID}' data-imgid="this.uploadedImages[i]._id" style="display: none">${img}</div>`;
 
         $(fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
@@ -64,15 +67,38 @@ export class FileUploader {
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      this.uploadedImagesMetadata[`${this.currentIndex}`] = this.cropperInstances[`${this.currentIndex}`].getData();
-      if (!this.cropperInstances[`${this.currentIndex+1}`]) {
-        // TODO: Send the data
-        console.log(this.uploadedImagesMetadata);
-        // location.reload();
+      this.uploadedImagesMetadata[this.currentIndex] = this.cropperInstances[this.currentIndex].getData();
+      if (!this.cropperInstances[this.currentIndex+1]) {
+
+        // Sending the data to the server
+        this.uploadedImagesMetadata.forEach((data, index) => {
+          this.uploadedImagesMetadata._id = this.cropperInstances[index].getImgId();
+        });
+
+        const filesMetadata = this.uploadedImagesMetadata;
+
+        $.ajax({
+          url: `/api/files/metadata`,
+          dataType: 'json',
+          data: filesMetadata,
+          beforeSend(xhr){
+            xhr.setRequestHeader('csrf-token', window.csrf);
+          },
+          success:function(data, textStatus, jqXHR) {
+            location.reload();
+          },
+          error: function(jqXHR, textStatus, errorThrown) {
+            // Print the errors to the console
+            console.error(`${jqXHR.responseJSON[0].msg}.`);
+
+            // TODO: Show errors to the user
+          }
+        });
+
       } else {
-        this.cropperInstances[`${this.currentIndex}`].hide();
-        this.cropperInstances[`${this.currentIndex + 1}`].show();
-        this.cropperInstances[`${this.currentIndex + 1}`].start();
+        this.cropperInstances[this.currentIndex].hide();
+        this.cropperInstances[this.currentIndex+1].show();
+        this.cropperInstances[this.currentIndex+1].start();
         this.currentIndex++;
       }
     });
