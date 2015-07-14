@@ -72,6 +72,7 @@ var FileUploader = (function () {
     var self = this;
 
     // Options
+    this.fileUploaderName = opts.fileUploaderName || 'cropper';
     this.fileUploaderContainer = fileUploaderContainer;
     this.maxFileSize = opts.maxFileSize || -1;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
@@ -173,6 +174,7 @@ var FileUploader = (function () {
           (function () {
 
             var filesMetadata = {};
+            var metadataName = _this.fileUploaderName;
 
             // Sending the data to the server
             _this.uploadedImagesMetadata.forEach(function (data, index) {
@@ -185,7 +187,7 @@ var FileUploader = (function () {
               method: 'PUT',
               contentType: 'application/json',
               dataType: 'json',
-              data: JSON.stringify({ files: filesMetadata, metadata_name: 'cropper' }),
+              data: JSON.stringify({ files: filesMetadata, metadata_name: metadataName }),
               beforeSend: function beforeSend(xhr) {
                 xhr.setRequestHeader('csrf-token', window.csrf);
               },

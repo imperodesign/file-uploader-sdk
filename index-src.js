@@ -72,6 +72,7 @@ export class FileUploader {
       if (!this.cropperInstances[this.currentIndex+1]) {
 
         const filesMetadata = {};
+        const metadataName = this.fileUploaderName;
 
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
@@ -84,7 +85,7 @@ export class FileUploader {
           method: 'PUT',
           contentType: 'application/json',
           dataType: 'json',
-          data: JSON.stringify({files: filesMetadata, metadata_name: 'cropper'}),
+          data: JSON.stringify({files: filesMetadata, metadata_name: metadataName}),
           beforeSend(xhr){
             xhr.setRequestHeader('csrf-token', window.csrf);
           },
@@ -117,6 +118,7 @@ export class FileUploader {
     const self = this;
 
     // Options
+    this.fileUploaderName = opts.fileUploaderName || 'cropper';
     this.fileUploaderContainer = fileUploaderContainer;
     this.maxFileSize = opts.maxFileSize || -1;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
