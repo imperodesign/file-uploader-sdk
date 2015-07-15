@@ -50,7 +50,7 @@ export class FileUploader {
         const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
         const div = `<div class='${cropperID}' data-imgid="${this.uploadedImages[i]._id}" style="display: none">${img}</div>`;
 
-        $(fileUploaderContainer).append(div);
+        $(this.fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
           this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value);
           if(counter === 0) {
@@ -81,7 +81,7 @@ export class FileUploader {
         });
 
         $.ajax({
-          url: `/api/files/metadata`,
+          url: this.metadataApiPath,
           method: 'PUT',
           contentType: 'application/json',
           dataType: 'json',
@@ -152,11 +152,11 @@ export class FileUploader {
     const nextBtn = `<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>`;
 
     // Append elements to DOM
-    $(fileUploaderContainer).append(html);
-    $(fileUploaderMediaController).append(`${closeBtn}${nextBtn}`);
+    $(this.fileUploaderContainer).append(html);
+    $(this.fileUploaderMediaController).append(`${closeBtn}${nextBtn}`);
 
     this._uploader = $('#fileupload').fileupload({
-      url: `/api/files`,
+      url: this.uploaderApiPath,
       dataType: 'json',
       beforeSend(xhr){
         xhr.setRequestHeader('csrf-token', window.csrf);
