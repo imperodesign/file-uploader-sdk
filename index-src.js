@@ -120,6 +120,7 @@ export class FileUploader {
     // Options
     this.metadataName = opts.metadataName || 'cropper';
     this.fileUploaderContainer = fileUploaderContainer;
+    this.fileUploaderMediaController = fileUploaderMediaController;
     this.uploaderApiPath = opts.uploaderApiPath || '/api/files';
     this.metadataApiPath = opts.metadataApiPath || '/api/files/metadata';
     this.maxFileSize = opts.maxFileSize || undefined;
