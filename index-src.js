@@ -72,7 +72,7 @@ export class FileUploader {
       if (!this.cropperInstances[this.currentIndex+1]) {
 
         const filesMetadata = {};
-        const metadataName = this.fileUploaderName;
+        const metadataName = this.metadataName;
 
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
@@ -118,9 +118,11 @@ export class FileUploader {
     const self = this;
 
     // Options
-    this.fileUploaderName = opts.fileUploaderName || 'cropper';
+    this.metadataName = opts.metadataName || 'cropper';
     this.fileUploaderContainer = fileUploaderContainer;
-    this.maxFileSize = opts.maxFileSize || -1;
+    this.uploaderApiPath = opts.uploaderApiPath || '/api/files';
+    this.metadataApiPath = opts.metadataApiPath || '/api/files/metadata';
+    this.maxFileSize = opts.maxFileSize || undefined;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
     this.croppers = opts.croppers || undefined;
 
@@ -137,7 +139,7 @@ export class FileUploader {
 
     let html = `<span class="btn btn-success fileinput-button">
       <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>
-      <input id="fileupload" type="file" name="files[]" multiple="">
+      <input id="fileupload" type="file" name="files[]" multiple="" accept="${this.acceptFileTypes ? this.acceptFileTypes : ''}">
     </span>
     <br>
     <br>

@@ -72,9 +72,11 @@ var FileUploader = (function () {
     var self = this;
 
     // Options
-    this.fileUploaderName = opts.fileUploaderName || 'cropper';
+    this.metadataName = opts.metadataName || 'cropper';
     this.fileUploaderContainer = fileUploaderContainer;
-    this.maxFileSize = opts.maxFileSize || -1;
+    this.uploaderApiPath = opts.uploaderApiPath || '/api/files';
+    this.metadataApiPath = opts.metadataApiPath || '/api/files/metadata';
+    this.maxFileSize = opts.maxFileSize || undefined;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
     this.croppers = opts.croppers || undefined;
 
@@ -89,7 +91,7 @@ var FileUploader = (function () {
     // TODO: Check file mimetypes
     // TODO: Check filesize (should be done backend maybe)
 
-    var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
+    var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="" accept="' + (this.acceptFileTypes ? this.acceptFileTypes : '') + '">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
 
     var closeBtn = '<button id="closeBtn" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
     var nextBtn = '<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>';
@@ -174,7 +176,7 @@ var FileUploader = (function () {
           (function () {
 
             var filesMetadata = {};
-            var metadataName = _this.fileUploaderName;
+            var metadataName = _this.metadataName;
 
             // Sending the data to the server
             _this.uploadedImagesMetadata.forEach(function (data, index) {
