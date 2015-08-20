@@ -182,7 +182,8 @@ var FileUploader = (function () {
             // Sending the data to the server
             _this.uploadedImagesMetadata.forEach(function (data, index) {
               _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
-              filesMetadata[_this.cropperInstances[index].name] = _this.uploadedImagesMetadata[index];
+              if (!filesMetadata[_this.cropperInstances[index].name]) filesMetadata[_this.cropperInstances[index].name] = [];
+              filesMetadata[_this.cropperInstances[index].name].push(_this.uploadedImagesMetadata[index]);
             });
 
             $.ajax({

@@ -77,7 +77,8 @@ export class FileUploader {
         // Sending the data to the server
         this.uploadedImagesMetadata.forEach((data, index) => {
           this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
-          filesMetadata[this.cropperInstances[index].name] = this.uploadedImagesMetadata[index];
+          if (!filesMetadata[this.cropperInstances[index].name]) filesMetadata[this.cropperInstances[index].name] = [];
+          filesMetadata[this.cropperInstances[index].name].push(this.uploadedImagesMetadata[index]);
         });
 
         $.ajax({
