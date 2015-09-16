@@ -1,8 +1,9 @@
 class Cropper {
-  constructor(cropperID, cropperName, aspectRatio) {
+  constructor(cropperID, cropperName, aspectRatio, fileNumber) {
     this.cropperID = cropperID;
     this.name = cropperName;
     this.aspectRatio = aspectRatio;
+    this.fileNumber = fileNumber;
   }
   destroy() {
     // this._cropper.destroy();
@@ -29,6 +30,7 @@ class Cropper {
   }
   show() {
     $(`.${this.cropperID}`).show();
+    $('#fileUploaderTitle').html(`Cropper ${this.fileNumber}: ${this.name}`)
   }
   getImgId() {
     return $(`.${this.cropperID}`).data('imgid');
@@ -52,7 +54,7 @@ export class FileUploader {
 
         $(this.fileUploaderContainer).append(div);
         $(`#${imgID}`).load(() => {
-          this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value);
+          this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value, i);
           if(counter === 0) {
             this.cropperInstances[counter].show();
             this.cropperInstances[counter].start();

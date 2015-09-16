@@ -32,7 +32,7 @@ The `nextBtn` is only if you want upload images and cropper them. You can be ins
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" data-dismiss="modal" aria-label="Close" class="close"><span aria-hidden="true">×</span></button>
-        <h4 class="modal-title">Upload Files</h4></div>
+        <h4 id="fileUploaderTitle" class="modal-title">Upload Files</h4></div>
       <div id="fileUploaderContainer" class="modal-body">
         <!-- UPLOADER -->
       </div>

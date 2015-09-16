@@ -1,6 +1,6 @@
 {
   "name": "file-uploader-sdk",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "A file uploader sdk based on jQuery-File-Upload. It supports resize and crop functionalities on images.",
   "main": "index.js",
   "scripts": {

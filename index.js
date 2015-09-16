@@ -9,12 +9,13 @@ var _createClass = (function () { function defineProperties(target, props) { for
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 
 var Cropper = (function () {
-  function Cropper(cropperID, cropperName, aspectRatio) {
+  function Cropper(cropperID, cropperName, aspectRatio, fileNumber) {
     _classCallCheck(this, Cropper);
 
     this.cropperID = cropperID;
     this.name = cropperName;
     this.aspectRatio = aspectRatio;
+    this.fileNumber = fileNumber;
   }
 
   _createClass(Cropper, [{
@@ -50,6 +51,7 @@ var Cropper = (function () {
     key: 'show',
     value: function show() {
       $('.' + this.cropperID).show();
+      $('#fileUploaderTitle').html('Cropper ' + this.fileNumber + ': ' + this.name);
     }
   }, {
     key: 'getImgId',
@@ -158,7 +160,7 @@ var FileUploader = (function () {
 
           $(_this.fileUploaderContainer).append(div);
           $('#' + imgID).load(function () {
-            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value);
+            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value, i);
             if (counter === 0) {
               _this.cropperInstances[counter].show();
               _this.cropperInstances[counter].start();
