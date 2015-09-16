@@ -15,7 +15,7 @@ var Cropper = (function () {
     this.cropperID = cropperID;
     this.name = cropperName;
     this.aspectRatio = aspectRatio;
-    this.fileNumber = fileNumber;
+    this.fileNumber = fileNumber + 1;
   }
 
   _createClass(Cropper, [{

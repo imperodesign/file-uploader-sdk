@@ -3,7 +3,7 @@ class Cropper {
     this.cropperID = cropperID;
     this.name = cropperName;
     this.aspectRatio = aspectRatio;
-    this.fileNumber = fileNumber;
+    this.fileNumber = fileNumber + 1;
   }
   destroy() {
     // this._cropper.destroy();
