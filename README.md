@@ -1,3 +1,5 @@
+# DEPRECATED: New version is coming.
+
 A file uploader sdk based on [jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload). It supports resize and crop functionalities on images.
 
 

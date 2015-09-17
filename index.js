@@ -82,6 +82,7 @@ var FileUploader = (function () {
     this.maxFileSize = opts.maxFileSize || undefined;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
     this.croppers = opts.croppers || undefined;
+    this.done = opts.done || undefined;
 
     this.uploadedFiles = [];
 
@@ -119,7 +120,11 @@ var FileUploader = (function () {
       },
       stop: function stop(e) {
 
-        if (!self.croppers) return location.reload();
+        if (!self.croppers && self.done) {
+          return self.done();
+        } else if (!self.croppers) {
+          return location.reload();
+        }
 
         // Filter images only
         self.uploadedFiles.forEach(function (uploadedFile, index) {
@@ -128,7 +133,11 @@ var FileUploader = (function () {
           }
         });
 
-        if (self.uploadedImages.length === 0) return location.reload();
+        if (self.uploadedImages.length === 0 && self.done) {
+          return self.done();
+        } else if (self.uploadedImages.length === 0) {
+          return location.reload();
+        }
 
         // Destroy the uploader
         $('#fileupload').fileupload('destroy');
@@ -146,6 +155,8 @@ var FileUploader = (function () {
     key: '_showCroppers',
     value: function _showCroppers() {
       var _this = this;
+
+      var self = this;
 
       var globalCounter = 0;
 
@@ -198,6 +209,9 @@ var FileUploader = (function () {
                 xhr.setRequestHeader('csrf-token', window.csrf);
               },
               success: function success(data, textStatus, jqXHR) {
+                if (self.done) {
+                  return self.done();
+                }
                 location.reload();
               },
               error: function error(jqXHR, textStatus, errorThrown) {

@@ -41,6 +41,8 @@ export class FileUploader {
 
   _showCroppers() {
 
+    const self = this;
+
     let globalCounter = 0;
 
     this.uploadedImages.forEach((uploadedFile, i) => {
@@ -93,6 +95,9 @@ export class FileUploader {
             xhr.setRequestHeader('csrf-token', window.csrf);
           },
           success: function(data, textStatus, jqXHR) {
+            if(self.done) {
+              return self.done();
+            }
             location.reload();
           },
           error: function(jqXHR, textStatus, errorThrown) {
@@ -129,6 +134,7 @@ export class FileUploader {
     this.maxFileSize = opts.maxFileSize || undefined;
     this.acceptFileTypes = opts.acceptFileTypes || undefined;
     this.croppers = opts.croppers || undefined;
+    this.done = opts.done || undefined;
 
     this.uploadedFiles = [];
 
@@ -175,7 +181,11 @@ export class FileUploader {
       },
       stop(e) {
 
-        if(!self.croppers) return location.reload();
+        if (!self.croppers && self.done) {
+          return self.done();
+        } else if (!self.croppers) {
+          return location.reload();
+        }
 
         // Filter images only
         self.uploadedFiles.forEach((uploadedFile, index) => {
@@ -184,7 +194,11 @@ export class FileUploader {
           }
         });
 
-        if(self.uploadedImages.length === 0) return location.reload();
+        if (self.uploadedImages.length === 0 && self.done) {
+          return self.done();
+        } else if (self.uploadedImages.length === 0) {
+          return location.reload();
+        }
 
         // Destroy the uploader
         $('#fileupload').fileupload('destroy');
