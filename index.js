@@ -20,7 +20,9 @@ var Cropper = (function () {
 
   _createClass(Cropper, [{
     key: 'destroy',
-    value: function destroy() {}
+    value: function destroy() {
+      // this._cropper.destroy();
+    }
   }, {
     key: 'start',
     value: function start() {
@@ -64,6 +66,84 @@ var Cropper = (function () {
 })();
 
 var FileUploader = (function () {
+  _createClass(FileUploader, [{
+    key: '_showCroppers',
+    value: function _showCroppers() {
+      var _this = this;
+
+      var self = this;
+
+      var globalCounter = 0;
+
+      this.tabsContainer = $('<div class="tab-content"></div>');
+      this.tabsButtons = $('<ul class="nav nav-tabs" role="tablist"></ul>');
+      $(this.fileUploaderContainer).append(this.tabsButtons);
+      $(this.fileUploaderContainer).append(this.tabsContainer);
+      $('#nextBtn').removeClass('hidden');
+
+      this.uploadedImages.forEach(function (uploadedFile, i) {
+
+        _this.croppers.forEach(function (cropperRequest, j) {
+          var counter = globalCounter;
+          var cropperID = 'cropper--' + i + '--' + j;
+          var imgID = 'img--' + cropperID;
+          var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
+          var div = '<div role=\'tabpanel\' class=\'' + cropperID + ' tab-pane ' + (j == 0 ? 'active' : '') + '\' id=\'pane-' + cropperID + '\' data-imgid="' + _this.uploadedImages[i]._id + '">' + img + '</div>';
+          var tab = '<li role="presentation" class="' + (j == 0 ? 'active' : '') + '"><a href="#pane-' + cropperID + '" aria-controls="' + cropperID + '" role="tab" data-toggle="tab">' + cropperRequest.name.replace('-', ' ') + '</a></li>';
+
+          $(_this.tabsContainer).append(div);
+          $(_this.tabsButtons).append(tab);
+          $('#' + imgID).load(function () {
+            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value, i);
+            _this.cropperInstances[counter].start();
+          });
+
+          globalCounter++;
+        });
+      });
+
+      // init next btn
+      $('#nextBtn').on('click', function (e) {
+        _this.uploadedImagesMetadata = _this.cropperInstances.map(function (cropper) {
+          return cropper.getData();
+        });
+
+        var filesMetadata = {};
+        var metadataName = _this.metadataName;
+
+        // Sending the data to the server
+        _this.uploadedImagesMetadata.forEach(function (data, index) {
+          _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
+          if (!filesMetadata[_this.cropperInstances[index].name]) filesMetadata[_this.cropperInstances[index].name] = [];
+          filesMetadata[_this.cropperInstances[index].name].push(_this.uploadedImagesMetadata[index]);
+        });
+
+        $.ajax({
+          url: _this.metadataApiPath,
+          method: 'PUT',
+          contentType: 'application/json',
+          dataType: 'json',
+          data: JSON.stringify({ files: filesMetadata, metadata_name: metadataName }),
+          beforeSend: function beforeSend(xhr) {
+            xhr.setRequestHeader('csrf-token', window.csrf);
+          },
+          success: function success(data, textStatus, jqXHR) {
+            if (self.done) {
+              return self.done();
+            }
+            location.reload();
+          },
+          error: function error(jqXHR, textStatus, errorThrown) {
+            // Print the errors to the console
+            console.error(jqXHR.responseJSON[0].msg + '.');
+
+            // TODO: Show errors to the user
+          }
+        });
+      });
+    }
+  }]);
+
   function FileUploader(fileUploaderContainer, fileUploaderMediaController, opts) {
     _classCallCheck(this, FileUploader);
 
@@ -98,11 +178,11 @@ var FileUploader = (function () {
     var html = '<span class="btn btn-success fileinput-button">\n      <i class="glyphicon glyphicon-plus"></i><span>Select files...</span>\n      <input id="fileupload" type="file" name="files[]" multiple="" accept="' + (this.acceptFileTypes ? this.acceptFileTypes : '') + '">\n    </span>\n    <br>\n    <br>\n    <div id="progress" class="progress">\n      <div class="progress-bar progress-bar-success"></div>\n    </div>\n    <div id="files" class="files"></div>';
 
     var closeBtn = '<button id="closeBtn" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>';
-    var nextBtn = '<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>';
+    var nextBtn = '<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Close </button>';
 
     // Append elements to DOM
     $(this.fileUploaderContainer).append(html);
-    $(this.fileUploaderMediaController).append('' + closeBtn + nextBtn);
+    $(this.fileUploaderMediaController).append('' + nextBtn + closeBtn);
 
     this._uploader = $('#fileupload').fileupload({
       url: this.uploaderApiPath,
@@ -151,92 +231,9 @@ var FileUploader = (function () {
     }).prop('disabled', !$.support.fileInput).parent().addClass($.support.fileInput ? undefined : 'disabled');
   }
 
-  _createClass(FileUploader, [{
-    key: '_showCroppers',
-    value: function _showCroppers() {
-      var _this = this;
-
-      var self = this;
-
-      var globalCounter = 0;
-
-      this.uploadedImages.forEach(function (uploadedFile, i) {
-
-        _this.croppers.forEach(function (cropperRequest, j) {
-          var counter = globalCounter;
-          var cropperID = 'cropper--' + i + '--' + j;
-          var imgID = 'img--' + cropperID;
-          var img = '<img id="' + imgID + '" src="' + _this.uploadedImages[i].url + '" style="width: 100%" />';
-          var div = '<div class=\'' + cropperID + '\' data-imgid="' + _this.uploadedImages[i]._id + '" style="display: none">' + img + '</div>';
-
-          $(_this.fileUploaderContainer).append(div);
-          $('#' + imgID).load(function () {
-            _this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value, i);
-            if (counter === 0) {
-              _this.cropperInstances[counter].show();
-              _this.cropperInstances[counter].start();
-              $('#nextBtn').removeClass('hidden');
-            }
-          });
-
-          globalCounter++;
-        });
-      });
-
-      // init next btn
-      $('#nextBtn').on('click', function (e) {
-        _this.uploadedImagesMetadata[_this.currentIndex] = _this.cropperInstances[_this.currentIndex].getData();
-        if (!_this.cropperInstances[_this.currentIndex + 1]) {
-          (function () {
-
-            var filesMetadata = {};
-            var metadataName = _this.metadataName;
-
-            // Sending the data to the server
-            _this.uploadedImagesMetadata.forEach(function (data, index) {
-              _this.uploadedImagesMetadata[index]._id = _this.cropperInstances[index].getImgId();
-              if (!filesMetadata[_this.cropperInstances[index].name]) filesMetadata[_this.cropperInstances[index].name] = [];
-              filesMetadata[_this.cropperInstances[index].name].push(_this.uploadedImagesMetadata[index]);
-            });
-
-            $.ajax({
-              url: _this.metadataApiPath,
-              method: 'PUT',
-              contentType: 'application/json',
-              dataType: 'json',
-              data: JSON.stringify({ files: filesMetadata, metadata_name: metadataName }),
-              beforeSend: function beforeSend(xhr) {
-                xhr.setRequestHeader('csrf-token', window.csrf);
-              },
-              success: function success(data, textStatus, jqXHR) {
-                if (self.done) {
-                  return self.done();
-                }
-                location.reload();
-              },
-              error: function error(jqXHR, textStatus, errorThrown) {
-                // Print the errors to the console
-                console.error(jqXHR.responseJSON[0].msg + '.');
-
-                // TODO: Show errors to the user
-              }
-            });
-          })();
-        } else {
-          _this.cropperInstances[_this.currentIndex].hide();
-          _this.cropperInstances[_this.currentIndex + 1].show();
-          _this.cropperInstances[_this.currentIndex + 1].start();
-          _this.currentIndex++;
-        }
-      });
-    }
-  }]);
-
   return FileUploader;
 })();
 
 exports.FileUploader = FileUploader;
-
-// this._cropper.destroy();
 
 //# sourceMappingURL=index.js.map
