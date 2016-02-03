@@ -1,5 +1,3 @@
-# DEPRECATED: New version is coming.
-
 A file uploader sdk based on [jQuery-File-Upload](https://github.com/blueimp/jQuery-File-Upload). It supports resize and crop functionalities on images.
 
 
@@ -58,4 +56,7 @@ const FileUploaderInstance = new FileUploader('#fileUploaderContainer', {
 
 
 # Server-side
-This module has been create for the [CLEVER](https://github.com/imperodesign/clever) project. Therefore has been designed to use the [clever-files](https://github.com/imperodesign/clever-files) package API. However, it should be compatible with a custom made version of the [jQuery-File-Upload server scripts](https://github.com/blueimp/jQuery-File-Upload/tree/master/server) (since resizing and cropping information are saved into a database for being used later with [thumbor](https://github.com/thumbor/thumbor)).
+This module has been create for the [CLEVER](https://github.com/cleverframework/clever) project. Therefore has been designed to use the [clever-v0-files](https://github.com/cleverframework/clever-v0-files) package API. However, it should be compatible with a custom made version of the [jQuery-File-Upload server scripts](https://github.com/blueimp/jQuery-File-Upload/tree/master/server) (since resizing and cropping information are saved into a database for being used later with [thumbor](https://github.com/thumbor/thumbor)).
+
+### IMPORTANT
+The latest npm `file-uploader-skd` version compatible with [clever-v0-files](https://github.com/cleverframework/clever-v0-files) is `0.0.5`. If you want to import it manually, please use the git release `v1.0.0-rc1`. 
