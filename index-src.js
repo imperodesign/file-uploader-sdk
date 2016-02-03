@@ -45,6 +45,13 @@ export class FileUploader {
 
     let globalCounter = 0;
 
+    this.tabsContainer = $(`<div class="tab-content"></div>`)
+    this.tabsButtons = $(`<ul class="nav nav-tabs" role="tablist"></ul>`)
+    $(this.fileUploaderContainer).append(this.tabsButtons)
+    $(this.fileUploaderContainer).append(this.tabsContainer)
+    $('#nextBtn').removeClass('hidden')
+
+
     this.uploadedImages.forEach((uploadedFile, i) => {
 
       this.croppers.forEach((cropperRequest, j) => {
@@ -52,16 +59,14 @@ export class FileUploader {
         const cropperID = `cropper--${i}--${j}`;
         const imgID = `img--${cropperID}`;
         const img = `<img id="${imgID}" src="${this.uploadedImages[i].url}" style="width: 100%" />`;
-        const div = `<div class='${cropperID}' data-imgid="${this.uploadedImages[i]._id}" style="display: none">${img}</div>`;
+        const div = `<div role='tabpanel' class='${cropperID} tab-pane ${j==0 ? 'active' : ''}' id='pane-${cropperID}' data-imgid="${this.uploadedImages[i]._id}">${img}</div>`;
+        const tab = `<li role="presentation" class="${j==0 ? 'active' : ''}"><a href="#pane-${cropperID}" aria-controls="${cropperID}" role="tab" data-toggle="tab">${cropperRequest.name.replace('-', ' ')}</a></li>`
 
-        $(this.fileUploaderContainer).append(div);
+        $(this.tabsContainer).append(div);
+        $(this.tabsButtons).append(tab);
         $(`#${imgID}`).load(() => {
           this.cropperInstances[counter] = new Cropper(cropperID, cropperRequest.name, cropperRequest.value, i);
-          if(counter === 0) {
-            this.cropperInstances[counter].show();
-            this.cropperInstances[counter].start();
-            $('#nextBtn').removeClass('hidden');
-          }
+          this.cropperInstances[counter].start();
         });
 
         globalCounter++;
@@ -72,48 +77,43 @@ export class FileUploader {
 
     // init next btn
     $('#nextBtn').on('click', e => {
-      this.uploadedImagesMetadata[this.currentIndex] = this.cropperInstances[this.currentIndex].getData();
-      if (!this.cropperInstances[this.currentIndex+1]) {
+      this.uploadedImagesMetadata = this.cropperInstances.map(cropper => {
+        return cropper.getData()
+      })
 
-        const filesMetadata = {};
-        const metadataName = this.metadataName;
+      const filesMetadata = {};
+      const metadataName = this.metadataName;
 
-        // Sending the data to the server
-        this.uploadedImagesMetadata.forEach((data, index) => {
-          this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
-          if (!filesMetadata[this.cropperInstances[index].name]) filesMetadata[this.cropperInstances[index].name] = [];
-          filesMetadata[this.cropperInstances[index].name].push(this.uploadedImagesMetadata[index]);
-        });
+      // Sending the data to the server
+      this.uploadedImagesMetadata.forEach((data, index) => {
+        this.uploadedImagesMetadata[index]._id = this.cropperInstances[index].getImgId();
+        if (!filesMetadata[this.cropperInstances[index].name]) filesMetadata[this.cropperInstances[index].name] = [];
+        filesMetadata[this.cropperInstances[index].name].push(this.uploadedImagesMetadata[index]);
+      });
 
-        $.ajax({
-          url: this.metadataApiPath,
-          method: 'PUT',
-          contentType: 'application/json',
-          dataType: 'json',
-          data: JSON.stringify({files: filesMetadata, metadata_name: metadataName}),
-          beforeSend(xhr){
-            xhr.setRequestHeader('csrf-token', window.csrf);
-          },
-          success: function(data, textStatus, jqXHR) {
-            if(self.done) {
-              return self.done();
-            }
-            location.reload();
-          },
-          error: function(jqXHR, textStatus, errorThrown) {
-            // Print the errors to the console
-            console.error(`${jqXHR.responseJSON[0].msg}.`);
-
-            // TODO: Show errors to the user
+      $.ajax({
+        url: this.metadataApiPath,
+        method: 'PUT',
+        contentType: 'application/json',
+        dataType: 'json',
+        data: JSON.stringify({files: filesMetadata, metadata_name: metadataName}),
+        beforeSend(xhr){
+          xhr.setRequestHeader('csrf-token', window.csrf);
+        },
+        success: function(data, textStatus, jqXHR) {
+          if(self.done) {
+            return self.done();
           }
-        });
+          location.reload();
+        },
+        error: function(jqXHR, textStatus, errorThrown) {
+          // Print the errors to the console
+          console.error(`${jqXHR.responseJSON[0].msg}.`);
 
-      } else {
-        this.cropperInstances[this.currentIndex].hide();
-        this.cropperInstances[this.currentIndex+1].show();
-        this.cropperInstances[this.currentIndex+1].start();
-        this.currentIndex++;
-      }
+          // TODO: Show errors to the user
+        }
+      });
+
     });
   }
 
@@ -159,11 +159,11 @@ export class FileUploader {
     <div id="files" class="files"></div>`;
 
     const closeBtn = `<button id="closeBtn" class="btn btn-default" type="button" data-dismiss="modal"> Close </button>`;
-    const nextBtn = `<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Next </button>`;
+    const nextBtn = `<button id="nextBtn" class="btn btn-success hidden" type="button"> Save & Close </button>`;
 
     // Append elements to DOM
     $(this.fileUploaderContainer).append(html);
-    $(this.fileUploaderMediaController).append(`${closeBtn}${nextBtn}`);
+    $(this.fileUploaderMediaController).append(`${nextBtn}${closeBtn}`);
 
     this._uploader = $('#fileupload').fileupload({
       url: this.uploaderApiPath,
