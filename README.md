@@ -59,4 +59,4 @@ const FileUploaderInstance = new FileUploader('#fileUploaderContainer', {
 This module has been create for the [CLEVER](https://github.com/cleverframework/clever) project. Therefore has been designed to use the [clever-v0-files](https://github.com/cleverframework/clever-v0-files) package API. However, it should be compatible with a custom made version of the [jQuery-File-Upload server scripts](https://github.com/blueimp/jQuery-File-Upload/tree/master/server) (since resizing and cropping information are saved into a database for being used later with [thumbor](https://github.com/thumbor/thumbor)).
 
 ### IMPORTANT
-The latest npm `file-uploader-skd` version compatible with [clever-v0-files](https://github.com/cleverframework/clever-v0-files) is `0.0.5`. If you want to import it manually, please use the git release `v1.0.0-rc1`. 
+The latest npm `file-uploader-skd` version compatible with [clever-v0-files](https://github.com/cleverframework/clever-v0-files) is the `0.0.5`. If you want to import it manually, please use the git release `v1.0.0-rc1`. 
